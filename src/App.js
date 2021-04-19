@@ -1,90 +1,40 @@
-import React, {Component, useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import Header from './header-component/Header'
+import Footer from './footer-component/Footer'
 import PubActivity from './content/pub-activity-component/PubActivity'
-import axios from 'axios'
+import "./App.css"
+import { Route, withRouter, Switch, Redirect} from "react-router-dom"
+import CountryInfo from './content/country-info-component/CountryInfo'
+import CountryOrganizations from './content/country-organizations-component/CountryOrganizations'
+import Admin from './content/admin-component/Admin'
 
 
-// class App extends Component {
+class App extends React.Component {
 
-  // state = { characters: [
-  //   {
-  //     name: 'Charlie',
-  //     job: 'Janitor',
-  //   },
-  //   {
-  //     name: 'Mac',
-  //     job: 'Bouncer',
-  //   },
-  //   {
-  //     name: 'Dee',
-  //     job: 'Aspring actress',
-  //   },
-  //   {
-  //     name: 'Dennis',
-  //     job: 'Bartender',
-  //   },
-  // ]}
-
-//   removeCharacter = (index) => {
-//     const {characters} = this.state
-  
-//     this.setState({
-//       characters: characters.filter((character, i) => {
-//         return i !== index
-//       }),
-//     })
-//   }
-
-//   render() {
-//     const { characters } = this.state
-//     return (
-//       <div className="container">
-//         <Table characterData={characters} removeCharacter={this.removeCharacter} />
-//       </div>
-//     )
-//   }
-
-// }
-
-// export default App
-function App() {
-
-  const [articles, setArticles] = useState(null);
-  const apiURL = "http://localhost:8000/polls/articles/some";
-  const fetchData = async () => {
-      const response = await axios.get(apiURL)
-      console.log('articles: ', response.data);
-      setArticles(response.data) 
+  render() {
+    return (
+        <div className="app-container">
+            <Header />
+            <div className="app-main-div">
+                <Switch>              
+                  <Route exact={true} path='/' render={(props) => (<PubActivity {...props}/>)}/>
+                  <Route exact={true} path='/brazil' render={(props) => (<CountryInfo {...props} country="Brazil"/>)}/>
+                  <Route exact={true} path='/russia' render={(props) => (<CountryInfo {...props} country="Russia"/>)}/>
+                  <Route exact={true} path='/china' render={(props) => (<CountryInfo {...props} country="China"/>)}/>
+                  <Route exact={true} path='/india' render={(props) => (<CountryInfo {...props} country="India"/>)}/>
+                  <Route exact={true} path='/southafrica' render={(props) => (<CountryInfo {...props} country="South Africa"/>)}/>
+                  <Route exact={true} path='/brazil/organizations' render={(props) => (<CountryOrganizations {...props} country="Brazil"/>)}/>
+                  <Route exact={true} path='/russia/organizations' render={(props) => (<CountryOrganizations {...props} country="Russia"/>)}/>
+                  <Route exact={true} path='/china/organizations' render={(props) => (<CountryOrganizations {...props} country="China"/>)}/>
+                  <Route exact={true} path='/india/organizations' render={(props) => (<CountryOrganizations {...props} country="India"/>)}/>
+                  <Route exact={true} path='/southafrica/organizations' render={(props) => (<CountryOrganizations {...props} country="South Africa"/>)}/>
+                  <Route exact={true} path='/admin' render={() => (<Admin/>)}/>
+                </Switch>
+            </div>
+          <Footer className="app-footer" />
+        </div>
+        )
   }
-
-  const [activities, setActivities] = useState(null);
-  const apiActivitiesURL = "http://localhost:8000/polls/activity";
-  useEffect(() => {
-    const fetchPubActivities = async () => {
-        const response = await axios.get(apiActivitiesURL)
-        console.log('ACT: ', response.data);
-        setActivities(response.data) 
-    };
-    fetchPubActivities();
-  }, []);
-
-
-  return (
-// передавать загруженные данные по активности в компонент pubActivity
-    <div className="App">
-      <Header></Header>
-      <PubActivity></PubActivity>
-      <div>
-        {activities && activities.map((activity, index) => {
-            return (
-              <div key={index}>
-                  <p>{activity.country}: {activity.count} articles</p>
-              </div>
-            );})
-        }
-      </div>
-    </div>
-  )
 }
 
-export default App
+export default withRouter(App)
