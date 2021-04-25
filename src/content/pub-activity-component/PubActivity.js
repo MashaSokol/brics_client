@@ -22,7 +22,7 @@ class PubActivity extends React.Component {
     }
      
     fetchPubActivities = async () => {
-          const apiActivitiesURL = "http://localhost:8000/polls/activity";
+          const apiActivitiesURL = "http://localhost:8000/bricsagentapplication/activity";
           const response = await axios.get(apiActivitiesURL);
           console.log('ACT: ', response.data);
           this.setState(this.setState({
@@ -31,7 +31,7 @@ class PubActivity extends React.Component {
     }
 
     fetchPeriod = async () => {
-        const apiPeriodURL = "http://localhost:8000/polls/statistic/period";
+        const apiPeriodURL = "http://localhost:8000/bricsagentapplication/statistic/period";
         const response = await axios.get(apiPeriodURL);
         console.log('Period: ', response.data);
         this.setState(this.setState({

@@ -29,7 +29,7 @@ class CountryInfo extends React.Component {
     }
      
     fetchTopOrganizations = async () => {
-          const apiActivitiesURL = "http://localhost:8000/polls/organizations/top"; 
+          const apiActivitiesURL = "http://localhost:8000/bricsagentapplication/organizations/top"; 
           console.log('{"country": ' + this.state.country + '}');
           const response = await axios.post(apiActivitiesURL, '{"country": "' + this.state.country + '"}'); // post-запрос с названием страны
           console.log('topOrganizations: ', response.data);
@@ -43,7 +43,7 @@ class CountryInfo extends React.Component {
     }
 
   fetchTopKeyWords = async () => {
-    const apiActivitiesURL = "http://localhost:8000/polls/keywords/top";
+    const apiActivitiesURL = "http://localhost:8000/bricsagentapplication/keywords/top";
     const response = await axios.post(apiActivitiesURL, '{"country": "' + this.state.country + '"}');
     console.log('topKeywords: ', response.data);
     this.setState(this.setState({

@@ -1,14 +1,19 @@
-.admin-flex-container {
+.admin-block-container {
     display: -webkit-box;
     display: block;
   }
+.admin-flex-container {
+    display: -webkit-flex;
+    display: flex;
+}
+
 .admin-justify-left {
     -webkit-justify-content: left;
     justify-content: left;
   }
 .admin-justify-center {
-    -webkit-justify-content: center;
-    justify-content: center;
+    /* -webkit-justify-content: center; */
+    justify-content: flex-end;
 }
 
 .admin-self-align-center {
@@ -44,4 +49,17 @@
     font-size: 25px;
     line-height: 60px;
     vertical-align: auto;
+    outline: none;
+    cursor: pointer;
+}
+
+.margin-right-0 {
+    margin-right: 0;
+    margin-left: auto;
+}
+
+.progress-div {
+    height: 60px;
+    border-radius: 8px;
+    background-color: #35D699;
 }

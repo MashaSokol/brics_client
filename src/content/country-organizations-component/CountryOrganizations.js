@@ -80,7 +80,7 @@ class CountryOrganizations extends React.Component {
 
     fetchOrganizations = async () => {
         console.log("fetching organizations... page: ", this.state.page);
-        const apiActivitiesURL = "http://localhost:8000/polls/organizations/limit"; // post-запрос с названием страны
+        const apiActivitiesURL = "http://localhost:8000/bricsagentapplication/organizations/limit"; // post-запрос с названием страны
         const response = await axios.post(apiActivitiesURL, '{"country": "'+ this.state.country +'", "page": '+ this.state.page+'}');
         console.log('limitOrganizations: ', response.data);
         this.setState(this.setState({
@@ -92,7 +92,7 @@ class CountryOrganizations extends React.Component {
             await this.setStatePage(1);         
         }
         this.setState({searchMode: true});
-        const apiSearchURL = "http://localhost:8000/polls/organizations/search";
+        const apiSearchURL = "http://localhost:8000/bricsagentapplication/organizations/search";
         const response = await axios.post(apiSearchURL, '{"search_text": "'+ this.state.searchLine +'", "country": "' + this.state.country + '","page": '+ this.state.page+', "count_from":' + this.state.countFrom +', "count_to" : ' + this.state.countUntill + '}');
         console.log('{"search_text": "'+ this.state.searchLine +'", "country": "' + this.state.country + '","page": '+ this.state.page+', "count_from":' + this.state.countFrom +', "count_to" : ' + this.state.countUntill + '}');
         console.log('searched Organizations: ', response.data);
