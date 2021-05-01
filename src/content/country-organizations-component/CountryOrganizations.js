@@ -1,10 +1,8 @@
 import React from 'react'
 import './CountryOrganizations.css';
 import axios from 'axios'
-import {Link} from "react-router-dom"
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { RemoveShoppingCartSharp } from '@material-ui/icons';
 import SearchIcon from '@material-ui/icons/Search';
 import CloseIcon from '@material-ui/icons/Close';
 
@@ -14,7 +12,7 @@ class CountryOrganizations extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            country: props.country,
+            country: null,
             organizations: [],
             page: 1,
             searchLine: "",
@@ -56,9 +54,16 @@ class CountryOrganizations extends React.Component {
         this.setState({countFrom: event.target.value});
     }
 
-
+    setStateCountry = async() => {
+        this.setState({ country: this.props.match.params.country });
+    } 
+    getData = async() => {
+        await this.setStateCountry();
+        await this.fetchOrganizations();
+    }
     componentDidMount() {
-        this.fetchOrganizations();
+        this.getData();
+        
     }
 
     convertToRussian(country) {
@@ -79,7 +84,7 @@ class CountryOrganizations extends React.Component {
 
 
     fetchOrganizations = async () => {
-        console.log("fetching organizations... page: ", this.state.page);
+        console.log("fetching organizations... page: ", this.state.page, " ... ", this.state.country);
         const apiActivitiesURL = "http://localhost:8000/bricsagentapplication/organizations/limit"; // post-запрос с названием страны
         const response = await axios.post(apiActivitiesURL, '{"country": "'+ this.state.country +'", "page": '+ this.state.page+'}');
         console.log('limitOrganizations: ', response.data);

@@ -1,24 +1,29 @@
 import React from 'react'
 import './PubActivity.css';
 import axios from 'axios'
-import {Link, withRouter} from "react-router-dom"
+import {Link} from "react-router-dom"
+import Tooltip from '@material-ui/core/Tooltip';
+import Button from '@material-ui/core/Button';
 
 
 // todo заменить имена классов на нормальные
-// todo закешировать активность на сервере
 class PubActivity extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
             activities: null,
-            period: null
+            period: null,
+            organizationsTop: [],
+            keywordsTop: []
         }
     }
 
     componentDidMount() {
         this.fetchPubActivities();
         this.fetchPeriod();
+        this.fetchOrganizationsTop();
+        this.fetchKeywordsTop();
     }
      
     fetchPubActivities = async () => {
@@ -39,6 +44,33 @@ class PubActivity extends React.Component {
         })); 
     }
 
+    fetchOrganizationsTop = async() => {
+        const apiOrganizationsTopURL = "http://localhost:8000/bricsagentapplication/organizations/all/top";
+        await axios.get(apiOrganizationsTopURL).then(res => {
+            this.setState({
+                organizationsTop: res.data 
+            });
+        });
+        console.log("TOP: ", this.state.organizationsTop);
+    }
+    fetchKeywordsTop = async() => {
+        const apiKeywordsTopURL = "http://localhost:8000/bricsagentapplication/keywords/all/top";
+        await axios.get(apiKeywordsTopURL).then(res => {
+            this.setState({
+                keywordsTop: res.data 
+            });
+        });
+        console.log("TOP: ", this.state.keywordsTop);
+    }
+
+    // todo перенести
+    convertToRussian(country) {
+            if (country === 'Russia') return 'Россия';
+            if (country === 'Brazil') return 'Бразилия';
+            if (country === 'China') return 'Китай';
+            if (country === 'India') return 'Индия';
+            if (country === 'South Africa') return 'Южно-Африканская Республика';
+    }
     normalzieName(name) {
         const normalName = name.replace(/\s/g, '').toLowerCase();
 	    return normalName;
@@ -60,31 +92,78 @@ class PubActivity extends React.Component {
         return (
             <div>
                 <div>
-                    <div className="pub-width-80 pub-flex-container pub-margin-top-5 pub-margin-auto">
-                        <div className="pub-margin-left-auto pub-title">Публикационная активность</div>
+                    <div className="width-80 flex top-40 margin-auto">
+                        <div className="left-auto pub-title">Публикационная активность</div>
                     </div>
-                    <div className="pub-width-100 pub-flex-container pub-justify-center">
-                        <div className="pub-line-div"></div>
+                    <div className="width-100 flex justify-center">
+                        <div className="pub-horizontal-div"></div>
                     </div>
-                    <div className="pub-width-80 pub-flex-container pub-margin-auto">
-                        <div className="pub-margin-left-auto pub-title-mini">За период с {this.state.period?.min_date} по {this.state.period?.max_date}</div>
+                    <div className="width-80 flex margin-auto">
+                        <div className="left-auto pub-title-mini">За период с {this.state.period?.min_date} по {this.state.period?.max_date}</div>
                     </div>
                 </div>
 
-                <div className="countries-activity">
+                <div className="width-80 margin-auto">
                     {activities && activities.map((activity, index) => {
                         return (
-                            <div key={index} className="country-activity pub-flex-container pub-margin-auto">
-                                <div  className="country-activity-div-left pub-flex-container pub-justify-right pub-self-align-center">
-                                    <Link to={this.normalzieName(activity.country)} className="pub-self-align-center pub-link-text  pub-activity-text app-margin-left-auto">{activity.country}</Link>
+                            <div key={index} className="flex margin-auto">
+                                <div  className="pub-activity-div-left flex justify-end self-center" style={{textAlign: 'end'}}>
+                                    <Link to={activity.country +"/info"} className="self-center pub-link-text pub-activity-text">
+                                            {this.convertToRussian(activity.country)}
+                                    </Link>
                                 </div>
-                                <div  className="country-activity-div-right pub-flex-container pub-justify-left pub-self-align-center">
-                                    <div className="pub-self-align-center pub-activity-div" style={{width: this.getDivWidth(activity.count)}}></div>
-                                    <div className="pub-self-align-center pub-activity-text">{activity.count}</div>
+                                <div  className="pub-activity-div-right flex justify-start self-center">
+                                    <div className="self-center pub-activity-div" style={{width: this.getDivWidth(activity.count)}}></div>
+                                    <Tooltip title="В таком количестве публикаций приняла участие данная страна" interactive placement="bottom-start">
+                                        <div className="self-center pub-activity-text pub-activity-margin pointer">{activity.count}</div>
+                                    </Tooltip>
                                 </div>
                             </div>
                         );})
                     }
+
+                </div>
+
+                <div className="width-100 flex justify-center top-20">
+                        <div className="pub-horizontal-div"></div>
+                </div>
+
+                <div className="flex width-80 margin-auto top-20">
+
+
+                        <div  className="flex justify-between">
+                            <div className="pub-activity-text pub-div-orgs-top">
+                                <Tooltip title="В каком количестве публикаций приняла участие организация" interactive placement="bottom-start">
+                                    <p className="pub-activity-text pub-margin-bottom-30 pointer">Топ организаций</p>
+                                </Tooltip>
+                                {this.state.organizationsTop && this.state.organizationsTop.map((organization, index) => {
+                                    return (
+                                        <div key={index} className="flex margin-auto">
+                                            
+                                                <Link className="pub-link-text" to={'organizations/' + organization.university_id + '/info'}>
+                                                    {index+1}. {organization.name}, <span className="accentText"> {organization.count}</span>
+                                                </Link>
+                                            
+                                        </div>
+                                    );})
+                                }
+                            </div>
+                            <div className="pub-vertical-div"></div>
+                        </div>
+
+                        <div className="pub-activity-text pub-div-keywords-top text-right ">
+                            <Tooltip title="В каком количестве публикаций данное слово отмечено как ключевое" interactive placement="bottom-start">
+                                <p className="pub-activity-text pub-margin-bottom-30 pointer">Топ ключевых слов</p>
+                            </Tooltip>
+                            {this.state.keywordsTop && this.state.keywordsTop.map((keyword, index) => {
+                                return (
+                                    <div key={index} className="flex justify-end">
+                                        <div>{index+1}. {keyword.name}, <span className="accentText"> {keyword.count}</span></div>
+                                    </div>
+                                );})
+                            }
+                        </div>
+
                 </div>
             </div>
         )

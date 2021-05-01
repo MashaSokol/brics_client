@@ -9,17 +9,26 @@ class CountryInfo extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            country: props.country,
+            country: null,
             topOrganizations: null,
             topKeyWords: null
         }
     }
+    setStateCountry = async() => {
+        this.setState({ country: this.props.match.params.country });
+    } 
 
-    componentDidMount() {
+    getData = async() => {
+        await this.setStateCountry();
         this.fetchTopOrganizations();
-        this.fetchTopKeyWords();
+        this.fetchTopKeyWords();  
     }
 
+    componentDidMount() {
+        this.getData();
+    }
+
+    // todo перенести
     convertToRussian(country) {
         if (country === 'Russia') return 'Россия';
         if (country === 'Brazil') return 'Бразилия';
@@ -29,7 +38,7 @@ class CountryInfo extends React.Component {
     }
      
     fetchTopOrganizations = async () => {
-          const apiActivitiesURL = "http://localhost:8000/bricsagentapplication/organizations/top"; 
+          const apiActivitiesURL = "http://localhost:8000/bricsagentapplication/country/organizations/top"; 
           console.log('{"country": ' + this.state.country + '}');
           const response = await axios.post(apiActivitiesURL, '{"country": "' + this.state.country + '"}'); // post-запрос с названием страны
           console.log('topOrganizations: ', response.data);
@@ -43,7 +52,8 @@ class CountryInfo extends React.Component {
     }
 
   fetchTopKeyWords = async () => {
-    const apiActivitiesURL = "http://localhost:8000/bricsagentapplication/keywords/top";
+    const apiActivitiesURL = "http://localhost:8000/bricsagentapplication/country/keywords/top";
+    console.log('{"country": ' + this.state.country + '}');
     const response = await axios.post(apiActivitiesURL, '{"country": "' + this.state.country + '"}');
     console.log('topKeywords: ', response.data);
     this.setState(this.setState({
@@ -52,7 +62,7 @@ class CountryInfo extends React.Component {
 }
 
     render() {
-        const pathToAllOrgs = '/' + this.normalzieName(this.state.country) + '/organizations';
+        const pathToAllOrgs = this.state.country ? '/' + this.state.country + '/organizations' : '';
         return (
             <div>
                 <div className="country-header country-flex-container country-margin-auto country-margin-top-50">
@@ -71,7 +81,7 @@ class CountryInfo extends React.Component {
                         {this.state.topOrganizations && this.state.topOrganizations.map((org, index) => {
                             return (
                                 <div key={index} className="country-self-align-center div-uni-name">
-                                    {index + 1}. {org.name}
+                                    {index + 1}. <Link to={'/organizations/' + org.university_id + '/info'}>{org.name}</Link>
                                 </div>
                             );})
                         }

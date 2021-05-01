@@ -1,8 +1,6 @@
-import { ContactSupportOutlined } from '@material-ui/icons';
 import React, { Component } from 'react'
 import './Admin.css';
 import axios from 'axios'
-import { useCookies } from 'react-cookie' 
 
 
 class Admin extends Component {
@@ -13,7 +11,7 @@ class Admin extends Component {
           htmlCode: "",
           countries: ["Brazil", "Russia", "India", "China", "South Africa"],
           country: "Brazil",
-          gettingProgress: false,
+          inProgress: false,
           currentCountry:  "",
           progress: 0,
           timerId: null
@@ -23,21 +21,17 @@ class Admin extends Component {
 
     componentDidMount() {
       this.getProgress();
-    
-      if (this.state.progress !== 100) {
-        this.setState({gettingProgress: true});
-        this.setState({timerId: setInterval(this.getProgress, 5000)});
-      }
-
     }
 
     componentWillUnmount() {
-      console.log(")))))))))))))))))");
       clearInterval(this.state.timerId);
     }
 
+    setStateCountry = async(country) => {
+      this.setState({country: country});
+    }
     handleCountryChange = async (event) => {
-      const result = await this.setState({country: event.target.value});
+      await this.setStateCountry(event.target.value);
       console.log("country: ", this.state.country);
     }
 
@@ -47,21 +41,24 @@ class Admin extends Component {
 
       await axios.get(apiProgressURL).then( res => {
         console.log("Progress: ", res.data);
-        if ( res.data.progress === 100 ||  res.data.progress === 0) {
+        if (!res.data.in_progress) {
           console.log("stooooooooop");
-          this.setState({gettingProgress: false});
+          this.setState({inProgress: false,  currentCountry: ""});
           clearInterval(this.state.timerId);
-          this.setState({
-            progress: res.data.progress,
-            currentCountry: res.data.country
-          })
+          this.setState({timerId: null});            
+          
         } else {
-          this.setState({
+          this.setState ({
+            progress: res.data.progress,
             currentCountry: res.data.country,
-            progress: res.data.progress
-          })
+            inProgress: true
+          });
+          if (!this.state.timerId) {
+            this.setState({timerId: setInterval(this.getProgress, 5000)});            
+          }
         }
       });
+
     }
 
     startServer = async () => {
@@ -76,15 +73,12 @@ class Admin extends Component {
                 accessControlAllowOrigin: true
               }
             )
-        .then( res => {
-              if (res.data.length > 20) {
-                  this.setState({htmlCode: res.data});
-                  console.log('Response: ', res); 
-                } else {
-                  this.setState({htmlCode: ""});
-                  this.setState({gettingProgress: true});
-                  this.getProgress();
-                  this.setState({timerId: setInterval(this.getProgress, 5000)});
+        .then( res => {             
+                this.setState({
+                  currentCountry: this.state.country
+                });
+                if (!this.state.timerId) {
+                  this.setState({timerId: setInterval(this.getProgress, 5000)});            
                 }
               } 
             )
@@ -95,9 +89,11 @@ class Admin extends Component {
             }
             if (err.response?.status === 423) {
               console.log("Сбор данных уже запущен");
-              if (!this.state.gettingProgress) {
-                this.setState({gettingProgress: true});
-                setInterval(this.getProgress, 5000);
+              if (!this.state.inProgress) {
+                this.setState({inProgress: true});
+              }
+              if (!this.state.timerId) {
+                this.setState({timerId: setInterval(this.getProgress, 5000)});            
               }
             }
         });
@@ -130,8 +126,18 @@ class Admin extends Component {
           <div className="admin-block-container admin-justify-left admin-margin-top-100">
 
             <div  className="admin-flex-container">
+
+              <select  className="admin-self-align-center width-48 rounden-select" onChange={this.handleCountryChange}>
+                                {this.state.countries && this.state.countries.map((country, index) => {
+                                    return (
+                                        <option className="rounden-select" key={index} value={country}>{country}</option>
+                                    );})
+                                }
+              </select>
+
               <button className="admin-button admin-self-align-center" onClick={() => this.startServer()}>Запустить сбор данных</button>
-              <div className="admin-self-align-center margin-right-0">{this.state.currentCountry} {this.state.progress == 0 ? "" : parseFloat(this.state.progress).toFixed(2)+"%"}</div>
+
+              <div className="admin-self-align-center margin-right-0 admin-text">{this.state.currentCountry !== "" ? 'Проводится сбор для:' : ''} {this.state.currentCountry} {this.state.progress === 0 ? "" : parseFloat(this.state.progress).toFixed(2)+"%"}</div>
             </div>
 
             <div className="admin-block-container admin-justify-center admin-margin-top-30">
@@ -140,13 +146,7 @@ class Admin extends Component {
                 </div>
             </div>
 
-            <select  className="admin-self-align-center width-48" onChange={this.handleCountryChange}>
-                                {this.state.countries && this.state.countries.map((country, index) => {
-                                    return (
-                                        <option key={index} value={country}>{country}</option>
-                                    );})
-                                }
-            </select>
+            
 
 
           </div>

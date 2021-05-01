@@ -1,3 +1,64 @@
 body {
     margin: 0;
 }
+
+/* container */
+.flex {
+    display: -webkit-flex;
+    display: flex;
+}
+.justify-end {
+    -webkit-justify-content: right;
+    justify-content: flex-end;
+}
+.justify-start {
+    -webkit-justify-content: start;
+    justify-content: flex-start;
+} 
+.justify-center {
+    -webkit-justify-content: center;
+    justify-content: center;
+} 
+.justify-between {
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+} 
+.self-center {
+    -webkit-align-self: center;
+    align-self: center;
+}
+
+/* decoration */
+.pointer {
+    cursor: pointer;
+}
+
+/* text */
+.text-right {
+    text-align: right;
+}
+
+
+/* width */
+.width-80 {
+    width: 80%;
+}
+
+.width-100 {
+    width: 100%;
+}
+
+/* margin */
+.margin-auto {
+    margin-left: auto;
+    margin-right: auto;
+}
+.left-auto {
+    margin-left: auto;
+}
+.top-40 {
+    margin-top: 40px;
+}
+.top-20 {
+    margin-top: 20px;
+}
