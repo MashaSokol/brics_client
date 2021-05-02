@@ -3,7 +3,6 @@ import './PubActivity.css';
 import axios from 'axios'
 import {Link} from "react-router-dom"
 import Tooltip from '@material-ui/core/Tooltip';
-import Button from '@material-ui/core/Button';
 
 
 // todo заменить имена классов на нормальные
@@ -12,7 +11,7 @@ class PubActivity extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            activities: null,
+            activities: "Загрузка...",
             period: null,
             organizationsTop: [],
             keywordsTop: []
@@ -89,7 +88,11 @@ class PubActivity extends React.Component {
 
     render() {
         const { activities } = this.state;
-        return (
+        if (activities === "Загрузка..." ) {
+            return (
+                <div>Загрузка...</div>
+            )
+        } else return (
             <div>
                 <div>
                     <div className="width-80 flex top-40 margin-auto">
@@ -104,8 +107,9 @@ class PubActivity extends React.Component {
                 </div>
 
                 <div className="width-80 margin-auto">
-                    {activities && activities.map((activity, index) => {
-                        return (
+                
+                 {activities && activities.map((activity, index) => {
+                    return (
                             <div key={index} className="flex margin-auto">
                                 <div  className="pub-activity-div-left flex justify-end self-center" style={{textAlign: 'end'}}>
                                     <Link to={activity.country +"/info"} className="self-center pub-link-text pub-activity-text">
@@ -114,13 +118,20 @@ class PubActivity extends React.Component {
                                 </div>
                                 <div  className="pub-activity-div-right flex justify-start self-center">
                                     <div className="self-center pub-activity-div" style={{width: this.getDivWidth(activity.count)}}></div>
-                                    <Tooltip title="В таком количестве публикаций приняла участие данная страна" interactive placement="bottom-start">
-                                        <div className="self-center pub-activity-text pub-activity-margin pointer">{activity.count}</div>
-                                    </Tooltip>
+                                    
+                                        <div className="flex self-center pub-activity-text pub-activity-margin pointer">
+                                            <Tooltip title="В таком количестве публикаций приняла участие данная страна" interactive placement="bottom-start">
+                                                <div>{activity.count}</div>
+                                            </Tooltip> 
+                                            <Tooltip title="Средний вклад страны в публикации, в которых страна принимала участие" interactive placement="bottom-start">
+                                                <div className="left-20">({parseFloat(activity.contribution).toFixed(0)}%)</div>
+                                            </Tooltip>      
+                                        </div>
+                                   
                                 </div>
                             </div>
-                        );})
-                    }
+                    );})
+                }
 
                 </div>
 
